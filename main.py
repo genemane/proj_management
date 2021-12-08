@@ -16,21 +16,21 @@ layout_main_menu = [              #Начальный пресет
 ]
 
 layout_after_login = [            #Пресет после клика кнопки Войти
-   [sg.Canvas(size=(280,100))],
-   [sg.Canvas(size=(60,1)), sg.Text(text='Для начала работы Вам необходимо пройти опрос \nна определение Вашего уровня самоорганизации')],
-   [sg.Canvas(size=(280, 100))]
+   [sg.Canvas(size=(700,2))],
+   [sg.Canvas(size=(50,1)), sg.Text(text='Для начала работы Вам необходимо пройти опрос на определение Вашего уровня самоорганизации')],
+   [sg.Canvas(size=(1,10)), sg.Text(text='Вам предлагается ряд утверждений, касающихся различных сторон Вашей жизни и способов обращения \nсо временем. Введите в поле ту цифру, которая в наибольшей \nмере характеризует \nВас и отражает Вашу точку зрения (1 — полное несогласие, \n7 — полное согласие с данным утверждением, 4 — \nсередина шкалы, остальные цифры — промежуточные значения). ')],
+   [sg.Canvas(size=(2,5)), sg.Text(text='1. Мне требуется много времени, чтобы “раскачаться” и начать действовать'), sg.Input('0', size=(2,1),key = ('input1'))],
+   [sg.Canvas(size=(700, 5))]
 ]
-window = sg.Window('PSA', layout_main_menu)
-
-#def runCommand():
-
- #  pass
+window = sg.Window('Органайзер', layout_main_menu)
 while True:
    event, values = window.Read()
    if event in (None, sg.WIN_CLOSED):
     break
-    if event == 'Войти':
-       window = sg.Window('PSA', layout_after_login)
-       #runCommand()
+   elif 'cen_button' in event:
+      window.close()
+      window = sg.Window('Опрос', layout_after_login)
 
-      # window = sg.Window('PSA', layout_after_login)
+
+
+
