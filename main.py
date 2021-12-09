@@ -14,7 +14,7 @@ layout_main_menu = [              #Начальный пресет
    [sg.Canvas(size=(62,1), key=('cen_left_canvas2')), sg.Button(button_text=('Зарегистрироваться'), size=(17,1), key=('register'))],
    [sg.Canvas(size=(280, 25))]
 ]
-que = [
+que = [ #Массив строк для опроса
    '1. Мне требуется много времени, чтобы “раскачаться” и начать действовать',
    '2. Я планирую мои дела ежедневно',
    '3. Меня выводят из себя и выбивают из привычного графика непредвиденные дела',
@@ -77,9 +77,9 @@ while True:
       if count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
          if int(values['input1']) == 1:          #Подозреваю, что эта конструкция мега неоптимизированная, но поменяете если надо,
             sum=sum+7                            #я пока не знаю как, не нашла тут switch - case
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
+            window.Element('sum').Update(value=sum) #Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
+            count=count+1                           #Например, указали 7 - программа берёт 1 и т.д.
+            window.Element('opros').Update(value=que[count]) #Такая система была в первоначальном опросе
             window.Element('input1').Update(value='')
          if int(values['input1']) == 7:
             sum=sum+1
@@ -123,7 +123,7 @@ while True:
          count=count+1
          window.Element('opros').Update(value=que[count])
          window.Element('input1').Update(value='')
-   elif 'register' in event:
+   elif 'register' in event:         #Регистрация
       window.close()
       window = sg.Window('Регистрация',layout_register)
 
