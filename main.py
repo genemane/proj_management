@@ -50,8 +50,19 @@ layout_after_login = [            #Пресет после клика кнопк
    [sg.Canvas(size=(1,1)), sg.Text(text='шкалы, остальные цифры — промежуточные значения)')],
    [sg.Canvas(size=(2,10)), sg.Text(text=que[count], key=('opros')), sg.Input('', size=(2,1),key = ('input1'))],
    [sg.Canvas(size=(90,1), key=('cen_left_canvas3')), sg.Button(button_text=('Далее'), size=(10,1), key=('next'))],
-   [sg.Canvas(size=(2,10)), sg.Input('', size=(3,1),key = ('vvv'))],
+   [sg.Canvas(size=(2,10)), sg.Input('', size=(3,1),key = ('sum'))],
    [sg.Canvas(size=(1000, 5))]
+]
+layout_register = [
+   [sg.Canvas(size=(500,2))],
+   [sg.Canvas(size=(200,2)), sg.Text(text='Регистрация')],
+   [sg.Canvas(size=(2,10)), sg.Text(text='Введите фамилию', key=('surname')), sg.Input('',size=(20,1), key=('input3'))],
+   [sg.Canvas(size=(2,10)), sg.Text(text='Введите имя', key=('name')), sg.Input('',size=(20,1), key=('input2'))],
+   [sg.Canvas(size=(2,10)), sg.Text(text='Введите отчество', key=('otch')), sg.Input('',size=(20,1), key=('input4'))],
+   [sg.Canvas(size=(2,10)), sg.Text(text='Придумайте логин', key=('login')), sg.Input('',size=(20,1), key=('input5'))],
+   [sg.Canvas(size=(2,10)), sg.Text(text='Придумайте пароль', key=('password')), sg.Input('',size=(20,1), key=('input6'))],
+   [sg.Canvas(size=(2,0)), sg.Text(text='Пароль должен содержать минимум 8 символов')],
+   [sg.Canvas(size=(2,10)), sg.Text(text='Повторите пароль', key=('password1')), sg.Input('',size=(20,1), key=('input7'))]
 ]
 window = sg.Window('Органайзер', layout_main_menu)
 sum=0
@@ -66,53 +77,57 @@ while True:
       if count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
          if int(values['input1']) == 1:          #Подозреваю, что эта конструкция мега неоптимизированная, но поменяете если надо,
             sum=sum+7                            #я пока не знаю как, не нашла тут switch - case
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
          if int(values['input1']) == 7:
             sum=sum+1
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
          if int(values['input1']) == 2:
             sum=sum+6
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
          if int(values['input1']) == 6:
             sum=sum+2
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
          if int(values['input1']) == 3:
             sum=sum+5
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
          if int(values['input1']) == 5:
             sum=sum+3
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
          if int(values['input1']) == 4:
             sum=sum+4
-            window.Element('vvv').Update(value=sum)
+            window.Element('sum').Update(value=sum)
             count=count+1
             window.Element('opros').Update(value=que[count])
             window.Element('input1').Update(value='')
       else:
          sum=sum+int(values['input1'])
-         window.Element('vvv').Update(value=sum)                #Пыталась сделать через условие, чтоб после 25 вопроса либо обнулялся счётчик, либо кнопка становилась невидимой
-         count=count+1                                          #Но пока не получилось, всё равно вылетает, поэтому я удалила свои неудачные попытки
+         window.Element('sum').Update(value=sum)
+         count=count+1
          window.Element('opros').Update(value=que[count])
          window.Element('input1').Update(value='')
-         #window.Element('next').Update(visible=False)
+   elif 'register' in event:
+      window.close()
+      window = sg.Window('Регистрация',layout_register)
+
+
 
 
 
