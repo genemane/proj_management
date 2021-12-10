@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-
+#import re
 layout_main_menu = [              #Начальный пресет
    [sg.Canvas(size=(150,10))],
    [sg.Canvas(size=(80,0)), sg.Text(text='Добро пожаловать!')],
@@ -51,6 +51,7 @@ layout_after_login = [            #Пресет после клика кнопк
    [sg.Canvas(size=(2,10)), sg.Text(text=que[count], key=('opros')), sg.Input('', size=(2,1),key = ('input1'))],
    [sg.Canvas(size=(90,1), key=('cen_left_canvas3')), sg.Button(button_text=('Далее'), size=(10,1), key=('next'))],
    [sg.Canvas(size=(2,10)), sg.Input('', size=(3,1),key = ('sum'))],
+   [sg.Canvas(size=(2,5)), sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'))],
    [sg.Canvas(size=(1000, 5))]
 ]
 layout_register = [
@@ -74,55 +75,36 @@ while True:
       window.close()
       window = sg.Window('Опрос', layout_after_login)
    elif 'next' in event:
-      if count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
-         if int(values['input1']) == 1:          #Подозреваю, что эта конструкция мега неоптимизированная, но поменяете если надо,
-            sum=sum+7                            #я пока не знаю как, не нашла тут switch - case
-            window.Element('sum').Update(value=sum) #Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
-            count=count+1                           #Например, указали 7 - программа берёт 1 и т.д.
-            window.Element('opros').Update(value=que[count]) #Такая система была в первоначальном опросе
+      if (values['input1'])!='1' and (values['input1'])!='2' and (values['input1'])!='3' and (values['input1'])!='4' and (values['input1'])!='5' and (values['input1'])!='6' and (values['input1'])!='7':
+            window.Element('mistake').Update(visible=True)
             window.Element('input1').Update(value='')
-         if int(values['input1']) == 7:
+      elif count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
+         if int(values['input1']) == 1:
+             sum=sum+7                                    #Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
+         if int(values['input1']) == 7:                   #Например, указали 7 - программа берёт 1 и т.д.
             sum=sum+1
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
          if int(values['input1']) == 2:
             sum=sum+6
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
          if int(values['input1']) == 6:
             sum=sum+2
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
          if int(values['input1']) == 3:
             sum=sum+5
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
          if int(values['input1']) == 5:
             sum=sum+3
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
          if int(values['input1']) == 4:
             sum=sum+4
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
-      else:
-         sum=sum+int(values['input1'])
          window.Element('sum').Update(value=sum)
          count=count+1
+         window.Element('mistake').Update(visible=False)
          window.Element('opros').Update(value=que[count])
          window.Element('input1').Update(value='')
+      else:
+            sum=sum+int(values['input1'])
+            window.Element('sum').Update(value=sum)
+            count=count+1
+            window.Element('mistake').Update(visible=False)
+            window.Element('opros').Update(value=que[count])
+            window.Element('input1').Update(value='')
    elif 'register' in event:         #Регистрация
       window.close()
       window = sg.Window('Регистрация',layout_register)
