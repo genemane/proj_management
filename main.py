@@ -52,6 +52,7 @@ layout_after_login = [            #Пресет после клика кнопк
    [sg.Canvas(size=(90,1), key=('cen_left_canvas3')), sg.Button(button_text=('Далее'), size=(10,1), key=('next'))],
    [sg.Canvas(size=(2,10)), sg.Input('', size=(3,1),key = ('sum'))],
    [sg.Canvas(size=(2,5)), sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'))],
+   [sg.Canvas(size=(90,1), key=('cen_left_canvas3')), sg.Button(button_text=('Завершить'), size=(10,1), key=('end'), visible=False)],
    [sg.Canvas(size=(1000, 5))]
 ]
 layout_register = [
@@ -65,6 +66,12 @@ layout_register = [
    [sg.Canvas(size=(2,0)), sg.Text(text='Пароль должен содержать минимум 8 символов')],
    [sg.Canvas(size=(2,10)), sg.Text(text='Повторите пароль', key=('password1')), sg.Input('',size=(20,1), key=('input7'))]
 ]
+layout_rezult = [
+   [sg.Canvas(size=(500,2))],
+   [sg.Canvas(size=(180,2)), sg.Text(text='Результаты опроса')],
+   [sg.Canvas(size=(2,2)), sg.Text(text='Количество набранных баллов: '), sg.Input('',size=(3,1), key=('rez'))],
+   [sg.Canvas(size=(180,2)), sg.Text(text='', key=('rezt'))]
+]
 window = sg.Window('Органайзер', layout_main_menu)
 sum=0
 while True:
@@ -75,39 +82,56 @@ while True:
       window.close()
       window = sg.Window('Опрос', layout_after_login)
    elif 'next' in event:
-      try:
-         if int(values['input1']) > 7 or int(values['input1']) < 1:
-            raise ValueError
-         elif count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
-            if int(values['input1']) == 1:
-               sum=sum+7                                     #Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
-            if int(values['input1']) == 7:                   #Например, указали 7 - программа берёт 1 и т.д.
-               sum=sum+1
-            if int(values['input1']) == 2:
-               sum=sum+6
-            if int(values['input1']) == 6:
-               sum=sum+2
-            if int(values['input1']) == 3:
-               sum=sum+5
-            if int(values['input1']) == 5:
-               sum=sum+3
-            if int(values['input1']) == 4:
-               sum=sum+4
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('mistake').Update(visible=False)
-            window.Element('opros').Update(value=que[count])
+      if count<24:
+         try:
+            if int(values['input1']) > 7 or int(values['input1']) < 1:
+               raise ValueError
+            elif count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
+               if int(values['input1']) == 1:
+                  sum=sum+7                                     #Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
+               if int(values['input1']) == 7:                   #Например, указали 7 - программа берёт 1 и т.д.
+                  sum=sum+1
+               if int(values['input1']) == 2:
+                  sum=sum+6
+               if int(values['input1']) == 6:
+                  sum=sum+2
+               if int(values['input1']) == 3:
+                  sum=sum+5
+               if int(values['input1']) == 5:
+                  sum=sum+3
+               if int(values['input1']) == 4:
+                  sum=sum+4
+               window.Element('sum').Update(value=sum)
+               count=count+1
+               window.Element('mistake').Update(visible=False)
+               window.Element('opros').Update(value=que[count])
+               window.Element('input1').Update(value='')
+            else:
+               sum=sum+int(values['input1'])
+               window.Element('sum').Update(value=sum)
+               count=count+1
+               window.Element('mistake').Update(visible=False)
+               window.Element('opros').Update(value=que[count])
+               window.Element('input1').Update(value='')
+         except:
+            window.Element('mistake').Update(visible=True)
             window.Element('input1').Update(value='')
-         else:
-            sum=sum+int(values['input1'])
-            window.Element('sum').Update(value=sum)
-            count=count+1
-            window.Element('mistake').Update(visible=False)
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
-      except:
-         window.Element('mistake').Update(visible=True)
-         window.Element('input1').Update(value='')
+      elif count==24:
+         sum=sum+int(values['input1'])
+         window.Element('sum').Update(value=sum)
+         count=count+1
+      else:
+         window.Element('end').Update(visible=True)
+   elif 'end' in event:
+      window.close()
+      window = sg.Window('Результаты опроса', layout_rezult)
+      window.Element('rez').Update(value=sum)  #Нужно разобраться, как передать сюда значение sum, пока что выдаёт здесь ошибку
+      if sum>0 and sum<59:
+         window.Element('rezt').Update(text='Ваш уровень самоорганизации низкий.')
+      if sum>58 and sum<117:
+         window.Element('rezt').Update(text='Ваш уровень самоорганизации средний.')
+      if sum>116 and sum<176:
+         window.Element('rezt').Update(text='Ваш уровень самоорганизации высокий.')
    elif 'register' in event:         #Регистрация
       window.close()
       window = sg.Window('Регистрация',layout_register)
