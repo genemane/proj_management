@@ -1,5 +1,4 @@
 import PySimpleGUI as sg
-#import re
 layout_main_menu = [              #Начальный пресет
    [sg.Canvas(size=(150,10))],
    [sg.Canvas(size=(80,0)), sg.Text(text='Добро пожаловать!')],
