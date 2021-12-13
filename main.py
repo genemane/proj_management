@@ -1,20 +1,29 @@
 import PySimpleGUI as sg
+import sqlite3 as sl
 
-layout_main_menu = [  # Начальный пресет
-    [sg.Canvas(size=(150, 10))],
-    [sg.Canvas(size=(80, 0)), sg.Text(text='Добро пожаловать!')],
-    [sg.Canvas(size=(55, 0)), sg.Text(text='Вас приветствует органайзер')],
-    [sg.Canvas(size=(0, 0)), sg.Text(text='Введите логин  '), sg.InputText(size=(20, 1))],
-    [sg.Canvas(size=(150, 5))],
-    [sg.Canvas(size=(0, 0)), sg.Text(text='Введите пароль'), sg.InputText(size=(20, 1))],
-    [sg.Canvas(size=(150, 15))],
-    [sg.Canvas(size=(90, 1), key=('cen_left_canvas1')), sg.Button(button_text=('Войти'), size=(10, 1), key=('enter'))],
-    [sg.Canvas(size=(150, 5))],
-    [sg.Canvas(size=(75, 0)), sg.Text(text='У Вас нет аккаунта?')],
-    [sg.Canvas(size=(62, 1), key=('cen_left_canvas2')),
-     sg.Button(button_text=('Зарегистрироваться'), size=(17, 1), key=('register'))],
-    [sg.Canvas(size=(280, 25))]
-]
+con =  sl.connect("main_data.db")  #Подключение к базе данных для авторизации и регистрации пользователей
+cursor = con.cursor()
+
+def make_main_menu():
+    layout = [  # Начальный пресет
+        [sg.Canvas(size=(150, 10))],
+        [sg.Canvas(size=(80, 0)), sg.Text(text='Добро пожаловать!')],
+        [sg.Canvas(size=(55, 0)), sg.Text(text='Вас приветствует органайзер')],
+        [sg.Canvas(size=(0, 0)), sg.Text(text='Неверный логин или пароль!', key='error_mes', visible=False)],
+        [sg.Canvas(size=(0, 0)), sg.Text(text='Введите логин  '), sg.InputText(size=(20, 1), key='input_main_login')],
+        [sg.Canvas(size=(150, 5))],
+        [sg.Canvas(size=(0, 0)), sg.Text(text='Введите пароль'), sg.InputText(size=(20, 1), key='input_main_pass', password_char='*')],
+        [sg.Canvas(size=(150, 15))],
+        [sg.Canvas(size=(90, 1), key=('cen_left_canvas1')), sg.Button(button_text=('Войти'), size=(10, 1), key=('enter'))],
+        [sg.Canvas(size=(150, 5))],
+        [sg.Canvas(size=(75, 0)), sg.Text(text='У Вас нет аккаунта?')],
+        [sg.Canvas(size=(62, 1), key=('cen_left_canvas2')),
+         sg.Button(button_text=('Зарегистрироваться'), size=(17, 1), key=('register'))],
+        [sg.Canvas(size=(10, 0)), sg.Text(text='Ваш аккаунт создан, осталось войти в него!', key='complete_ok', visible=False)],
+        [sg.Canvas(size=(200, 25))]
+    ]
+    return sg.Window('Органайзер', layout, finalize=True)
+
 que = [  # Массив строк для опроса
     '1. Мне требуется много времени, чтобы “раскачаться” и начать действовать',
     '2. Я планирую мои дела ежедневно',
@@ -48,55 +57,80 @@ text_opros = 'Для начала работы Вам необходимо пр�
              'Введите в поле ту цифру, которая в наибольшей мере характеризует Вас и отражает Вашу точку зрения ' \
              '(1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина шкалы, остальные цифры — промежуточные значения'
 count = 0
-layout_after_login = [  # Пресет после клика кнопки Войти
-    [sg.Canvas(size=(1000, 2))],
-    [sg.Canvas(size=(200, 30)),
-     sg.Text(text='Для начала работы Вам необходимо пройти опрос на определение Вашего уровня самоорганизации')],
-    [sg.Canvas(size=(1, 1)), sg.Text(
-        text='Вам предлагается 25 утверждений, касающихся различных сторон Вашей жизни и способов обращения со временем. Введите в поле ту цифру, которая ')],
-    [sg.Canvas(size=(1, 1)), sg.Text(
-        text='в наибольшей мере характеризует Вас и отражает Вашу точку зрения (1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина ')],
-    [sg.Canvas(size=(1, 1)), sg.Text(text='шкалы, остальные цифры — промежуточные значения)')],
-    [sg.Canvas(size=(2, 10)), sg.Text(text=que[count], key=('opros')), sg.Input('', size=(2, 1), key=('input1'))],
-    [sg.Canvas(size=(90, 1), key=('cen_left_canvas3')), sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
-    [sg.Canvas(size=(2, 10)), sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'))],
-    [sg.Canvas(size=(2, 5)), sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'))],
-    [sg.Canvas(size=(90, 1), key=('cen_left_canvas3')),
-     sg.Button(button_text=('Завершить'), size=(10, 1), key=('end'), visible=False)],
-    [sg.Canvas(size=(1000, 5))]
-]
-layout_register = [
-    [sg.Canvas(size=(500, 2))],
-    [sg.Canvas(size=(200, 2)), sg.Text(text='Регистрация')],
-    [sg.Canvas(size=(2, 10)), sg.Text(text='Введите фамилию', key=('surname')),
-     sg.Input('', size=(20, 1), key=('input3'))],
-    [sg.Canvas(size=(2, 10)), sg.Text(text='Введите имя', key=('name')), sg.Input('', size=(20, 1), key=('input2'))],
-    [sg.Canvas(size=(2, 10)), sg.Text(text='Введите отчество', key=('otch')),
-     sg.Input('', size=(20, 1), key=('input4'))],
-    [sg.Canvas(size=(2, 10)), sg.Text(text='Придумайте логин', key=('login')),
-     sg.Input('', size=(20, 1), key=('input5'))],
-    [sg.Canvas(size=(2, 10)), sg.Text(text='Придумайте пароль', key=('password')),
-     sg.Input('', size=(20, 1), key=('input6'))],
-    [sg.Canvas(size=(2, 0)), sg.Text(text='Пароль должен содержать минимум 8 символов')],
-    [sg.Canvas(size=(2, 10)), sg.Text(text='Повторите пароль', key=('password1')),
-     sg.Input('', size=(20, 1), key=('input7'))]
-]
-layout_rezult = [
-    [sg.Canvas(size=(500, 2))],
-    [sg.Canvas(size=(180, 2)), sg.Text(text='Результаты опроса')],
-    [sg.Canvas(size=(2, 2)), sg.Text(text='Количество набранных баллов: '), sg.Text('', size=(3, 1), key=('rez'))],
-    [sg.Canvas(size=(180, 2)), sg.Text(text='', key=('rezt'))]
-]
-window = sg.Window('Органайзер', layout_main_menu)
+def make_after_login():
+    layout = [  # Пресет после клика кнопки Войти
+        [sg.Canvas(size=(1000, 2))],
+        [sg.Canvas(size=(200, 30)),
+         sg.Text(text='Для начала работы Вам необходимо пройти опрос на определение Вашего уровня самоорганизации')],
+        [sg.Canvas(size=(1, 1)), sg.Text(
+            text='Вам предлагается 25 утверждений, касающихся различных сторон Вашей жизни и способов обращения со временем. Введите в поле ту цифру, которая ')],
+        [sg.Canvas(size=(1, 1)), sg.Text(
+            text='в наибольшей мере характеризует Вас и отражает Вашу точку зрения (1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина ')],
+        [sg.Canvas(size=(1, 1)), sg.Text(text='шкалы, остальные цифры — промежуточные значения)')],
+        [sg.Canvas(size=(2, 10)), sg.Text(text=que[count], key=('opros')), sg.Input('', size=(2, 1), key=('input1'))],
+        [sg.Canvas(size=(90, 1), key=('cen_left_canvas3')), sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
+        [sg.Canvas(size=(2, 10)), sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'))],
+        [sg.Canvas(size=(2, 5)), sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'))],
+        [sg.Canvas(size=(90, 1), key=('cen_left_canvas3')),
+         sg.Button(button_text=('Завершить'), size=(10, 1), key=('end'), visible=False)],
+        [sg.Canvas(size=(1000, 5))]
+    ]
+    return sg.Window('Опрос', layout, finalize=True)
+
+open = False
+
+def make_register():
+    layout = [
+        [sg.Canvas(size=(500, 2))],
+        [sg.Canvas(size=(200, 2)), sg.Text(text='Регистрация')],
+        [sg.Canvas(size=(2, 10)), sg.Text(text='Введите фамилию  ', key=('surname')),
+         sg.Input('', size=(20, 1), key=('input_sur'))],
+        [sg.Canvas(size=(2, 10)), sg.Text(text='Введите имя          ', key=('name')),
+         sg.Input('', size=(20, 1), key=('input_name'))],
+        [sg.Canvas(size=(2, 10)), sg.Text(text='Введите отчество   ', key=('patronymic')),
+         sg.Input('', size=(20, 1), key=('input_patr'))],
+        [sg.Canvas(size=(2, 10)), sg.Text(text='Придумайте логин  ', key=('login')),
+         sg.Input('', size=(20, 1), key=('input_login'))],
+        [sg.Canvas(size=(2, 0)), sg.Text(text='Пароль должен содержать минимум 8 символов')],
+        [sg.Canvas(size=(2, 0)), sg.Text(text='Придумайте пароль', key=('pass')),
+         sg.Input('', size=(20, 0), key=('input_pass'), password_char='*'),
+         sg.Button(button_text='      👁️', font='Arial, 12' ,size=(0, 0), key=('open_pass'))],
+        [sg.Canvas(size=(2, 10)), sg.Text(text='Повторите пароль   ', key=('pass_check')),
+         sg.Input('', size=(20, 1), key=('input_check'), password_char='*')],
+        [sg.Canvas(size=(150, 50)),
+         sg.Button(button_text=('Зарегистрироваться'), size=(20, 1), key=('reg_complete'))],
+        [sg.Canvas(size=(2, 0)), sg.Text(text='Заполните все поля для завершения регистрации!', key='reg_check', visible=False)]
+    ]
+    return sg.Window('Регистрация', layout, finalize=True)
+
+def make_rezult():
+    layout = [
+        [sg.Canvas(size=(500, 2))],
+        [sg.Canvas(size=(180, 2)), sg.Text(text='Результаты опроса')],
+        [sg.Canvas(size=(2, 2)), sg.Text(text='Количество набранных баллов: '),sg.Text('', size=(3, 1), key=('rez'))],
+        [sg.Canvas(size=(180, 2)), sg.Text(text='', key=('rezt'))],
+        [sg.Canvas(size=(150, 2)), sg.Button(button_text=('Завершить опрос'), size=(20, 1), key=('opros_complete'))]
+    ]
+    return sg.Window('Результаты', layout, finalize=True)
+
+window = make_main_menu()
 score = 0
+
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
     elif 'enter' in event:
+        cursor.execute('SELECT pass FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
+        executed_str = ''.join(str(cursor.fetchone()))
+        if executed_str == values['input_main_pass']:
+            window.close()
+            window = make_after_login()
+        else:
+            window.Element('error_mes').Update(visible=True)
+    elif 'register' in event:
         window.close()
-        window = sg.Window('Опрос', layout_after_login, finalize=True)
-        window.Element('sum').Update(value=score)
+        window = make_register()
     elif 'next' in event:
         try:
             if int(values['input1']) > 7 or int(values['input1']) < 1:
@@ -132,10 +166,12 @@ while True:
         except:
             window.Element('mistake').Update(visible=True)
             window.Element('input1').Update(value='')
+            window.Element('sum').Update(value=score)
     elif 'end' in event:
-        score = score + int(values['input1'])
+        if values['input1']!= '':
+            score = score + int(values['input1'])
         window.close()
-        window = sg.Window('Результаты опроса', layout_rezult, finalize=True)
+        window = make_rezult()
         window.Element('rez').Update(value=score)
         if 0 < score < 59:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации низкий.')
@@ -143,7 +179,31 @@ while True:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации средний.')
         if 116 < score < 176:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации высокий.')
-    elif 'register' in event:  # Регистрация
+    elif 'open_pass' in event:
+        if open:
+            open = False
+            window.Element('input_pass').Update(password_char='*')
+        else:
+            open = True
+            window.Element('input_pass').Update(password_char='')
+    elif 'reg_complete' in event:
+        if (values['input_sur'] or values['input_name'] or values['input_patr'] or values['input_login'] or values['input_pass'] or values['input_check']) == '':
+            window.Element('reg_check').Update(value='Заполните все поля для завершения регистрации!',visible=True)
+        elif values['input_pass'] != values['input_check']:
+            window.Element('reg_check').Update(value='Пароли не совпадают!', visible=True)
+        else:
+            sql = 'INSERT INTO USER_LOGIN_DATA (id, surname, name, patronymic, login, pass, admin) values(?, ?, ?, ?, ?, ?, ?)'
+            last = ''.join(str(cursor.execute("SELECT Id FROM USER_LOGIN_DATA ORDER BY Id DESC LIMIT 1").fetchone()))
+            last = int(''.join(i for i in last if i.isdigit()))+1
+            data = [
+                (last, values['input_sur'], values['input_name'], values['input_patr'], values['input_login'], values['input_pass'], 0)
+            ]
+            with con:
+                con.executemany(sql, data)
+            window.close()
+            window = make_main_menu()
+            window.Element('complete_ok').Update(visible=True)
+    elif 'opros_complete':
         window.close()
-        window = sg.Window('Регистрация', layout_register)
+        window = make_main_menu()
 window.close()
