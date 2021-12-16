@@ -96,7 +96,7 @@ def make_after_login():
 open = False
 
 def make_register():
-    layout = [     #[sg.Text('Enter the value',justification='center',size=(100,1))],
+    layout = [    
         [sg.Canvas(size=(0, 2))],
         [sg.Text('Регистрация', font='Arial, 12', justification='center', size=(42,1))],
         [sg.Canvas(size=(0, 6))],
