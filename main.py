@@ -5,22 +5,37 @@ con =  sl.connect("main_data.db")  #Подключение к базе данн�
 cursor = con.cursor()
 
 def make_main_menu():
-    layout = [  # Начальный пресет
-        [sg.Canvas(size=(150, 10))],
-        [sg.Canvas(size=(80, 0)), sg.Text(text='Добро пожаловать!')],
-        [sg.Canvas(size=(55, 0)), sg.Text(text='Вас приветствует органайзер')],
-        [sg.Canvas(size=(0, 0)), sg.Text(text='Неверный логин или пароль!', key='error_mes', visible=False)],
-        [sg.Canvas(size=(0, 0)), sg.Text(text='Введите логин  '), sg.InputText(size=(20, 1), key='input_main_login')],
-        [sg.Canvas(size=(150, 5))],
-        [sg.Canvas(size=(0, 0)), sg.Text(text='Введите пароль'), sg.InputText(size=(20, 1), key='input_main_pass', password_char='*')],
-        [sg.Canvas(size=(150, 15))],
-        [sg.Canvas(size=(90, 1), key=('cen_left_canvas1')), sg.Button(button_text=('Войти'), size=(10, 1), key=('enter'))],
-        [sg.Canvas(size=(150, 5))],
-        [sg.Canvas(size=(75, 0)), sg.Text(text='У Вас нет аккаунта?')],
-        [sg.Canvas(size=(62, 1), key=('cen_left_canvas2')),
-         sg.Button(button_text=('Зарегистрироваться'), size=(17, 1), key=('register'))],
-        [sg.Canvas(size=(10, 0)), sg.Text(text='Ваш аккаунт создан, осталось войти в него!', key='complete_ok', visible=False)],
-        [sg.Canvas(size=(200, 25))]
+    layout = [  # Начальный пресет           [sg.Text('Enter the value',justification='center',size=(100,1))],
+        [sg.Canvas(size=(0, 10))],
+        [sg.Text('Добро пожаловать!', justification='center',size=(35,0))],
+        [sg.Text('Вас приветствует органайзер', justification='center',size=(35,0))],
+        [sg.Text('Неверный логин или пароль!', key='error_mes', visible=False)],
+        [sg.Canvas(size=(0, 5))],
+        [sg.Text('Введите логин  '), sg.InputText(size=(20, 1), key='input_main_login')],
+        [sg.Canvas(size=(0, 2))],
+        [sg.Text('Введите пароль'), sg.InputText(size=(20, 1), key='input_main_pass', password_char='*')],
+        [sg.Canvas(size=(0, 15))],
+        [sg.Canvas(size=(86, 0), key=('cen_left_canvas1')), sg.Button(button_text=('Войти'), size=(10, 1), key=('enter'))],
+        [sg.Canvas(size=(0, 5))],
+        [sg.Text('У Вас нет аккаунта?', justification='center', size=(35,0))],
+        [sg.Canvas(size=(58, 0), key=('cen_left_canvas2')), sg.Button(button_text=('Зарегистрироваться'), size=(17, 1), key=('register'))], #[sg.Button('Enter','center',size=(100,1))]
+        [sg.Text('Ваш аккаунт создан, осталось войти в него!',justification='center',size=(35,0), key='complete_ok', visible=False)],
+        [sg.Canvas(size=(0, 25))]
+
+        #[sg.Canvas(size=(150, 10))],
+        #[sg.Canvas(size=(80, 0)), sg.Text(text='Добро пожаловать!')],
+        #[sg.Canvas(size=(55, 0)), sg.Text(text='Вас приветствует органайзер')],
+        #[sg.Canvas(size=(0, 0)), sg.Text(text='Неверный логин или пароль!', key='error_mes', visible=False)],
+        #[sg.Canvas(size=(0, 0)), sg.Text(text='Введите логин  '), sg.InputText(size=(20, 1), key='input_main_login')],
+        #[sg.Canvas(size=(150, 5))],
+        #[sg.Canvas(size=(0, 0)), sg.Text(text='Введите пароль'), sg.InputText(size=(20, 1), key='input_main_pass', password_char='*')],
+        #[sg.Canvas(size=(150, 15))],
+        #[sg.Canvas(size=(90, 1), key=('cen_left_canvas1')), sg.Button(button_text=('Войти'), size=(10, 1), key=('enter'))],
+        #[sg.Canvas(size=(150, 5))],
+        #[sg.Canvas(size=(75, 0)), sg.Text(text='У Вас нет аккаунта?')],
+        #[sg.Canvas(size=(62, 1), key=('cen_left_canvas2')),sg.Button(button_text=('Зарегистрироваться'), size=(17, 1), key=('register'))],
+        #[sg.Canvas(size=(10, 0)), sg.Text(text='Ваш аккаунт создан, осталось войти в него!', key='complete_ok', visible=False)],
+        #[sg.Canvas(size=(200, 25))]
     ]
     return sg.Window('Органайзер', layout, finalize=True)
 
