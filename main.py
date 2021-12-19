@@ -17,7 +17,7 @@ def make_main_menu():
         [sg.Text('Добро пожаловать!', font=fonts[0])],
         [sg.Text('Вас приветствует органайзер', font=fonts[0])],
         [sg.Text('*Неверный логин или пароль!', font=fonts[1], key='error_mes', visible=False)],
-        [sg.Text('Введите логин   ', font=fonts[1]),
+        [sg.Text('Введите логин  ', font=fonts[1]),
          sg.InputText(size=(20, 1), key='input_main_login')],
         [sg.Text('Введите пароль', font=fonts[1]),
          sg.InputText(size=(20, 1), key='input_main_pass', password_char='*')],
@@ -63,13 +63,7 @@ text_opros = 'Для начала работы Вам необходимо пр�
 count = 0
 def make_after_login():
     layout = [  # Пресет после клика кнопки Войти
-        [sg.Text(text='Для начала работы Вам необходимо пройти опрос на определение Вашего уровня самоорганизации', font=fonts[0])],
-        [sg.Text(
-            text='Вам предлагается 25 утверждений, касающихся различных сторон Вашей жизни и способов обращения со временем. Введите в поле ту цифру, которая ', font=fonts[1])],
-        [sg.Text(
-            text='в наибольшей мере характеризует Вас и отражает Вашу точку зрения (1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина ', font=fonts[1])],
-        [sg.Text(text='шкалы, остальные цифры — промежуточные значения)', font=fonts[1])],
-        [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
+        [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), relief = 'groove', orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
         [sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
         [sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'), font=fonts[1])],
         [sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'), font=fonts[1])],
@@ -78,16 +72,27 @@ def make_after_login():
     return sg.Window('Опрос', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
 
 open = False
+def make_after_login_text():
+    layout = [  # Пресет после клика кнопки Войти
+        [sg.Text(text='Для начала работы Вам необходимо пройти опрос на определение Вашего уровня самоорганизации', font=fonts[0])],
+        [sg.Text(
+            text='Вам предлагается 25 утверждений, касающихся различных сторон Вашей жизни и способов обращения со временем. Введите в поле ту цифру, которая ', font=fonts[1])],
+        [sg.Text(
+            text='в наибольшей мере характеризует Вас и отражает Вашу точку зрения (1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина ', font=fonts[1])],
+        [sg.Text(text='шкалы, остальные цифры — промежуточные значения)', font=fonts[1])],
+        [sg.Button(button_text=('Продолжить'), size=(20, 1), key=('end_text'), visible=True)]
+]
+    return sg.Window('Опрос', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
 
 def make_register():
     layout = [     #[sg.Text('Enter the value',justification='center',size=(100,1))],
         [sg.Text('Регистрация', font=fonts[0])],
-        [sg.Text('Введите фамилию   ', font=fonts[1], key=('surname')), sg.Input('', size=(40, 1), key=('input_sur'))],
-        [sg.Text('Введите имя            ', font=fonts[1], key=('name')), sg.Input('', size=(40, 1), key=('input_name'))],
-        [sg.Text('Введите отчество   ', font=fonts[1], key=('patronymic')), sg.Input('', size=(40, 1), key=('input_patr'))],
-        [sg.Text('Придумайте логин   ', font=fonts[1], key=('login')), sg.Input('', size=(40, 1), key=('input_login'))],
+        [sg.Text('Введите фамилию', font=fonts[1], key=('surname')), sg.Input('', size=(40, 1), key=('input_sur'))],
+        [sg.Text('Введите имя', font=fonts[1], key=('name')), sg.Input('', size=(40, 1), key=('input_name'))],
+        [sg.Text('Введите отчество', font=fonts[1], key=('patronymic')), sg.Input('', size=(40, 1), key=('input_patr'))],
+        [sg.Text('Придумайте логин', font=fonts[1], key=('login')), sg.Input('', size=(40, 1), key=('input_login'))],
         [sg.Text('Придумайте пароль', font=fonts[1], key=('pass')), sg.Input('', size=(28, 1), key=('input_pass'), password_char='*'), sg.Button(button_text='      👁️', font=fonts[1], key=('open_pass'))],
-        [sg.Text('Повторите пароль   ', font=fonts[1], key=('pass_check')), sg.Input('', size=(40, 1), key=('input_check'), password_char='*')],
+        [sg.Text('Повторите пароль', font=fonts[1], key=('pass_check')), sg.Input('', size=(40, 1), key=('input_check'), password_char='*')],
         [sg.Text('*Пароль должен содержать минимум 8 символов', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(20, 1), key=('reg_complete'))],
         [sg.Text('Заполните все поля для завершения регистрации!', font=fonts[1], key='reg_check', visible=False)]
@@ -116,7 +121,7 @@ while True:
         executed_str = re.sub("[^A-Za-z0-9]", "", executed_str)
         if executed_str == values['input_main_pass']:
             window.close()
-            window = make_after_login()
+            window = make_after_login_text()
         else:
             window.Element('error_mes').Update(visible=True)
     elif 'register' in event:
@@ -158,6 +163,9 @@ while True:
             window.Element('mistake').Update(visible=True)
             window.Element('input1').Update(value='')
             window.Element('sum').Update(value=score)
+    elif 'end_text' in event:
+        window.close()
+        window = make_after_login()
     elif 'end' in event:
         if values['input1']!= '':
             score = score + int(values['input1'])
