@@ -25,21 +25,6 @@ def make_main_menu():
         [sg.Text('У Вас нет аккаунта?', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(30, 1), key=('register'))],
         [sg.Text('*Ваш аккаунт создан, осталось войти в него!', font=fonts[1], key='complete_ok', visible=False)],
-
-        #[sg.Canvas(size=(150, 10))],
-        #[sg.Canvas(size=(80, 0)), sg.Text(text='Добро пожаловать!')],
-        #[sg.Canvas(size=(55, 0)), sg.Text(text='Вас приветствует органайзер')],
-        #[sg.Canvas(size=(0, 0)), sg.Text(text='Неверный логин или пароль!', key='error_mes', visible=False)],
-        #[sg.Canvas(size=(0, 0)), sg.Text(text='Введите логин  '), sg.InputText(size=(20, 1), key='input_main_login')],
-        #[sg.Canvas(size=(150, 5))],
-        #[sg.Canvas(size=(0, 0)), sg.Text(text='Введите пароль'), sg.InputText(size=(20, 1), key='input_main_pass', password_char='*')],
-        #[sg.Canvas(size=(150, 15))],
-        #[sg.Canvas(size=(90, 1), key=('cen_left_canvas1')), sg.Button(button_text=('Войти'), size=(10, 1), key=('enter'))],
-        #[sg.Canvas(size=(150, 5))],
-        #[sg.Canvas(size=(75, 0)), sg.Text(text='У Вас нет аккаунта?')],
-        #[sg.Canvas(size=(62, 1), key=('cen_left_canvas2')),sg.Button(button_text=('Зарегистрироваться'), size=(17, 1), key=('register'))],
-        #[sg.Canvas(size=(10, 0)), sg.Text(text='Ваш аккаунт создан, осталось войти в него!', key='complete_ok', visible=False)],
-        #[sg.Canvas(size=(200, 25))]
     ]
     return sg.Window('Органайзер', layout, size=(500, 250), resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
 
@@ -106,26 +91,6 @@ def make_register():
         [sg.Text('*Пароль должен содержать минимум 8 символов', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(20, 1), key=('reg_complete'))],
         [sg.Text('Заполните все поля для завершения регистрации!', font=fonts[1], key='reg_check', visible=False)]
-
-        #[sg.Canvas(size=(500, 2))],
-        #[sg.Canvas(size=(200, 2)), sg.Text(text='Регистрация')],
-        #[sg.Canvas(size=(2, 10)), sg.Text(text='Введите фамилию  ', key=('surname')),
-         #sg.Input('', size=(20, 1), key=('input_sur'))],
-        #[sg.Canvas(size=(2, 10)), sg.Text(text='Введите имя          ', key=('name')),
-         #sg.Input('', size=(20, 1), key=('input_name'))],
-        #[sg.Canvas(size=(2, 10)), sg.Text(text='Введите отчество   ', key=('patronymic')),
-         #sg.Input('', size=(20, 1), key=('input_patr'))],
-        #[sg.Canvas(size=(2, 10)), sg.Text(text='Придумайте логин  ', key=('login')),
-         #sg.Input('', size=(20, 1), key=('input_login'))],
-        #[sg.Canvas(size=(2, 0)), sg.Text(text='Пароль должен содержать минимум 8 символов')],
-        #[sg.Canvas(size=(2, 0)), sg.Text(text='Придумайте пароль', key=('pass')),
-         #sg.Input('', size=(20, 0), key=('input_pass'), password_char='*'),
-        # sg.Button(button_text='      👁️', font='Arial, 12' ,size=(0, 0), key=('open_pass'))],
-        #[sg.Canvas(size=(2, 10)), sg.Text(text='Повторите пароль   ', key=('pass_check')),
-        # sg.Input('', size=(20, 1), key=('input_check'), password_char='*')],
-        #[sg.Canvas(size=(150, 50)),
-        # sg.Button(button_text=('Зарегистрироваться'), size=(20, 1), key=('reg_complete'))],
-        #[sg.Canvas(size=(2, 0)), sg.Text(text='Заполните все поля для завершения регистрации!', key='reg_check', visible=False)]
     ]
     return sg.Window('Регистрация', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
 
