@@ -72,7 +72,6 @@ def make_after_login():
         [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
         [sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
         [sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'), font=fonts[1])],
-        [sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'), font=fonts[1])],
         [sg.Button(button_text=('Завершить'), size=(10, 1), key=('end'), visible=False)]
     ]
     return sg.Window('Опрос', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
@@ -123,44 +122,35 @@ while True:
         window.close()
         window = make_register()
     elif 'next' in event:
-        try:
-            if int(values['input1']) > 7 or int(values['input1']) < 1:
-                raise ValueError
-            elif count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
-                if int(values['input1']) == 1:
-                    score = score + 7           # Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
-                if int(values['input1']) == 7:  # Например, указали 7 - программа берёт 1 и т.д.
-                    score = score + 1
-                if int(values['input1']) == 2:
-                    score = score + 6
-                if int(values['input1']) == 6:
-                    score = score + 2
-                if int(values['input1']) == 3:
-                    score = score + 5
-                if int(values['input1']) == 5:
-                    score = score + 3
-                if int(values['input1']) == 4:
-                    score = score + 4
-            else:
-                score = score + int(values['input1'])
-            window.Element('sum').Update(value=score)
-            count = count + 1
-            # Должно быть значение 25 (для тестов используем, например, 3)
-            if count < 25:
-                window.Element('mistake').Update(visible=False)
-                window.Element('opros').Update(value=que[count])
-                window.Element('input1').Update(value='')
-                # Должно быть значение 24 (для тестов используем, например, 2)
-                if count == 24:
-                    window.Element('next').Update(visible=False)
-                    window.Element('end').Update(visible=True)
-        except:
-            window.Element('mistake').Update(visible=True)
-            window.Element('input1').Update(value='')
-            window.Element('sum').Update(value=score)
-    elif 'end' in event:
-        if values['input1']!= '':
+        if count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
+            if int(values['input1']) == 1:
+                score = score + 7           # Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
+            if int(values['input1']) == 7:  # Например, указали 7 - программа берёт 1 и т.д.
+                score = score + 1
+            if int(values['input1']) == 2:
+                score = score + 6
+            if int(values['input1']) == 6:
+                score = score + 2
+            if int(values['input1']) == 3:
+                score = score + 5
+            if int(values['input1']) == 5:
+                score = score + 3
+            if int(values['input1']) == 4:
+                score = score + 4
+        else:
             score = score + int(values['input1'])
+        window.Element('sum').Update(value=score)
+        count = count + 1
+        # Должно быть значение 25 (для тестов используем, например, 3)
+        if count < 25:
+            window.Element('opros').Update(value=que[count])
+            window.Element('input1').Update(value='')
+            # Должно быть значение 24 (для тестов используем, например, 2)
+            if count == 24:
+                window.Element('next').Update(visible=False)
+                window.Element('end').Update(visible=True)
+    elif 'end' in event:
+        score = score + int(values['input1'])
         window.close()
         window = make_rezult()
         window.Element('rez').Update(value=score)
