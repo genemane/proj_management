@@ -3,7 +3,7 @@ import re
 import PySimpleGUI as sg
 import sqlite3 as sl
 
-sg.theme('DarkAmber')
+sg.theme('Material1')
 
 con =  sl.connect("main_data.db")  #Подключение к базе данных для авторизации и регистрации пользователей
 cursor = con.cursor()
@@ -114,7 +114,7 @@ while True:
         cursor.execute('SELECT pass FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
         executed_str = ''.join(str(cursor.fetchone()))
         executed_str = re.sub("[^A-Za-z0-9]", "", executed_str)
-        if executed_str == values['input_main_pass'] and executed_str.__len__() > 8:
+        if executed_str == values['input_main_pass']:
             window.close()
             window = make_after_login()
         else:
@@ -182,7 +182,7 @@ while True:
             window.Element('reg_check').Update(value='Пароль содержит меньше 8-ми символов!', visible=True)
         elif values['input_pass'] != values['input_check']:
             window.Element('reg_check').Update(value='Пароли не совпадают!', visible=True)
-        elif (values['input_sur'] or values['input_name'] or values['input_patr'] or values['input_login'] or values['input_pass'] or values['input_check']) == '':
+        elif values['input_sur'] == '' or values['input_name'] == '' or values['input_patr'] == '' or values['input_login'] == '' or values['input_pass'] == '' or values['input_check'] == '':
             window.Element('reg_check').Update(value='Заполните все поля для завершения регистрации!',visible=True)
         else:
             sql = 'INSERT INTO USER_LOGIN_DATA (id, surname, name, patronymic, login, pass, admin) values(?, ?, ?, ?, ?, ?, ?)'
