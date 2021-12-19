@@ -26,7 +26,7 @@ def make_main_menu():
         [sg.Button(button_text=('Зарегистрироваться'), size=(30, 1), key=('register'))],
         [sg.Text('*Ваш аккаунт создан, осталось войти в него!', font=fonts[1], key='complete_ok', visible=False)],
     ]
-    return sg.Window('Органайзер', layout, size=(500, 250), resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
+    return sg.Window('Органайзер', layout, icon=r'1.ico', size=(500, 250), resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
 
 que = [  # Массив строк для опроса
     '1. Мне требуется много времени, чтобы “раскачаться” и начать действовать',
@@ -69,7 +69,7 @@ def make_after_login():
         [sg.Text(
             text='в наибольшей мере характеризует Вас и отражает Вашу точку зрения (1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина ', font=fonts[1])],
         [sg.Text(text='шкалы, остальные цифры — промежуточные значения)', font=fonts[1])],
-        [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Input('', size=(2, 1), key=('input1'))],
+        [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
         [sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
         [sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'), font=fonts[1])],
         [sg.Text(text='Введите значение от 1 до 7', visible=False, key=('mistake'), font=fonts[1])],
