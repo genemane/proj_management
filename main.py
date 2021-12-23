@@ -1,5 +1,5 @@
 import re
-
+from datetime import date, timedelta
 import PySimpleGUI as sg
 import sqlite3 as sl
 
@@ -24,10 +24,34 @@ def make_main_menu():
         [sg.Button(button_text=('Войти'), size=(20, 1), key=('enter'))],
         [sg.Text('У Вас нет аккаунта?', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(30, 1), key=('register'))],
+        [sg.Button(button_text=('Перейти в органайзер'), size=(30, 1), key=('org'))],
         [sg.Text('*Ваш аккаунт создан, осталось войти в него!', font=fonts[1], key='complete_ok', visible=False)],
     ]
     return sg.Window('Органайзер', layout, icon=r'1.ico', size=(500, 250), resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
-
+days=[
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+]
+zadachi=[
+    'Прочитать главу 1',
+    'Прочитать главу 2',
+    'Прочитать главу 3',
+    'Выучить определения главы 2',
+    'Составить вопросы по главе 3',
+    'Выучить определения из глав 2, 3',
+    'Составить вопросы по главе 3',
+    'Составить конспект по главе 1',
+    'Составить карточки терминов 2',
+    'Составить план главы 3',
+    'Пересказ главы 1',
+    'Пересказ главы 2',
+    'Пересказ главы 3'
+]
 que = [  # Массив строк для опроса
     '1. Мне требуется много времени, чтобы “раскачаться” и начать действовать',
     '2. Я планирую мои дела ежедневно',
@@ -54,6 +78,21 @@ que = [  # Массив строк для опроса
     '23. Я ни к чему не стремлюсь',
     '24. Если я не закончил какое-то дело, то это не выходит у меня из головы',
     '25. У меня есть главная цель в жизни'
+]
+raspr=[
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
 ]
 # Для будущей версии, если найдем способ вывода многострочного текста в sg.Text
 text_opros = 'Для начала работы Вам необходимо пройти опрос на определение Вашего уровня самоорганизации\n' \
@@ -84,7 +123,7 @@ def make_after_login_text():
     return sg.Window('Опрос', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
 
 def make_register():
-    layout = [     #[sg.Text('Enter the value',justification='center',size=(100,1))],
+    layout = [
         [sg.Text('Регистрация', font=fonts[0])],
         [sg.Text('Введите фамилию', font=fonts[1], key=('surname')), sg.Input('', size=(40, 1), key=('input_sur'))],
         [sg.Text('Введите имя', font=fonts[1], key=('name')), sg.Input('', size=(40, 1), key=('input_name'))],
@@ -97,16 +136,44 @@ def make_register():
         [sg.Text('Заполните все поля для завершения регистрации!', font=fonts[1], key='reg_check', visible=False)]
     ]
     return sg.Window('Регистрация', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
-
+def organizer():
+    layout = [
+        [sg.pin(sg.Button(button_text=(days[0]), size=(10, 1), key=('day1'))),
+         sg.pin(sg.Button(button_text=(days[1]), size=(10, 1), key=('day2'))),
+         sg.pin(sg.Button(button_text=(days[2]), size=(10, 1), key=('day3'))),
+         sg.pin(sg.Button(button_text=(days[3]), size=(10, 1), key=('day4'))),
+         sg.pin(sg.Button(button_text=(days[4]), size=(10, 1), key=('day5'))),
+         sg.pin(sg.Button(button_text=(days[5]), size=(10, 1), key=('day6'))),
+         sg.pin(sg.Button(button_text=(days[6]), size=(10, 1), key=('day7')))]
+    ]
+    return sg.Window('Органайзер', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 def make_rezult():
     layout = [
         [sg.Text(text='Результаты опроса', font=fonts[0])],
         [sg.Text(text='Количество набранных баллов: '),sg.Text('', size=(3, 1), key=('rez'), font=fonts[1])],
-        [sg.Text(text='', key=('rezt'), font=fonts[1])],
+        [sg.Multiline(size=(50,10), key=('rezt'), font=fonts[1], disabled=True)],
         [sg.Button(button_text=('Завершить опрос'), size=(20, 1), key=('opros_complete'))]
     ]
     return sg.Window('Результаты', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
-
+def date_zadachi():
+    layout = [
+        [sg.Text(text="Для начала работы распределите задачи по дням:", font=fonts[0])],
+        [sg.Text(text=zadachi[0], font=fonts[0]), sg.Combo(days, size=(10,1), key=('com0'), readonly=True)],
+        [sg.Text(text=zadachi[1], font=fonts[0]), sg.Combo(days, size=(10,1), key=('com1'), readonly=True)],
+        [sg.Text(text=zadachi[2], font=fonts[0]), sg.Combo(days, size=(10,1), key=('com2'), readonly=True)],
+        [sg.Text(text=zadachi[3], font=fonts[0]), sg.Combo(days, size=(10,1), key=('com3'), readonly=True)],
+        [sg.Text(text=zadachi[4], font=fonts[0]), sg.Combo(days, size=(10,1), key=('com4'), readonly=True)],
+        [sg.Text(text=zadachi[5], font=fonts[0], visible=False, key=('zad5')), sg.Combo(days, size=(10,1), key=('com5'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[6], font=fonts[0], visible=False, key=('zad6')), sg.Combo(days, size=(10,1), key=('com6'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[7], font=fonts[0], visible=False, key=('zad7')), sg.Combo(days, size=(10,1), key=('com7'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[8], font=fonts[0], visible=False, key=('zad8')), sg.Combo(days, size=(10,1), key=('com8'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[9], font=fonts[0], visible=False, key=('zad9')), sg.Combo(days, size=(10,1), key=('com9'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[10], font=fonts[0], visible=False, key=('zad10')), sg.Combo(days, size=(10,1), key=('com10'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[11], font=fonts[0], visible=False, key=('zad11')), sg.Combo(days, size=(10,1), key=('com11'), readonly=True, visible=False)],
+        [sg.Text(text=zadachi[12], font=fonts[0], visible=False, key=('zad12')), sg.Combo(days, size=(10,1), key=('com12'), readonly=True, visible=False)],
+        [sg.Button(button_text=('Начать работу'), size=(20,1), key=('startwork'))]
+    ]
+    return sg.Window('Результаты', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 window = make_main_menu()
 score = 0
 
@@ -126,6 +193,25 @@ while True:
     elif 'register' in event:
         window.close()
         window = make_register()
+    elif 'startwork' in event:
+       #Эти данные нужно как-то сохранять в БД
+       # i=0
+       # while i<13
+        raspr[0]=(values['com0'])
+        raspr[1]=(values['com1'])
+        raspr[2]=(values['com2'])
+        raspr[3]=(values['com3'])
+        raspr[4]=(values['com4'])
+        raspr[5]=(values['com5'])
+        raspr[6]=(values['com6'])
+        raspr[7]=(values['com7'])
+        raspr[8]=(values['com8'])
+        raspr[9]=(values['com9'])
+        raspr[10]=(values['com10'])
+        raspr[11]=(values['com11'])
+        raspr[12]=(values['com12'])
+        window.close()
+        window=organizer()
     elif 'next' in event:
         if count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
             if int(values['input1']) == 1:
@@ -157,6 +243,18 @@ while True:
     elif 'end_text' in event:
         window.close()
         window = make_after_login()
+    elif 'org' in event: #берем today либо из базы данных, либо из функции
+        today=date.today()
+        izm =timedelta(days=1, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
+        days[0]=today
+        days[1]=today+izm
+        days[2]=today+izm*2
+        days[3]=today+izm*3
+        days[4]=today+izm*4
+        days[5]=today+izm*5
+        days[6]=today+izm*6
+        window.close()         #Если уже есть дата в БД, то открывается сразу органайзер
+        window=date_zadachi()
             # Должно быть значение 24 (для тестов используем, например, 2)
     elif 'end' in event:
         score = score + int(values['input1'])
@@ -165,11 +263,11 @@ while True:
         window = make_rezult()
         window.Element('rez').Update(value=score)
         if 0 < score < 59:
-            window.Element('rezt').Update(value='Ваш уровень самоорганизации низкий.')
+            window.Element('rezt').Update(value='Ваш уровень самоорганизации низкий. Вы предпочитаете жить спонтанно, не привязывать свою деятельность к жесткой структуре и целям. Ваше будущее для Вас самого достаточно туманно, Вам не свойственно четко планировать свою ежедневную активность и прилагать волевые усилия для завершения начатых дел, однако это позволяет Вам достаточно быстро и гибко переключаться на новые виды активности, не «застревая» на структурировании своей деятельности.')
         if 58 < score < 117:
-            window.Element('rezt').Update(value='Ваш уровень самоорганизации средний.')
+            window.Element('rezt').Update(value='Ваш уровень самоорганизации средний. Вы способны сочетать структурированный подход к организации времени своей жизни со спонтанностью и гибкостью, умеете ценить все составляющие Вашего психологического времени и извлекать для себя ценный опыт из многоплановости своей жизни.')
         if 116 < score < 176:
-            window.Element('rezt').Update(value='Ваш уровень самоорганизации высокий.')
+            window.Element('rezt').Update(value='Ваш уровень самоорганизации высокий. Вам свойственно видеть и ставить цели, планировать свою деятельность, в том числе с помощью внешних средств, и, проявляя волевые качества и настойчивость, идти к ее достижению. Возможно, в отдельных видах деятельности Вы можете быть чрезмерно структури- рованны, организованны и недостаточно гибки. Тем не менее Вы достаточно эффективно можете структурировать свою деятельность.')
     elif 'open_pass' in event:
         if open:
             open = False
