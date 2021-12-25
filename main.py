@@ -1,3 +1,4 @@
+import datetime
 import re
 from datetime import date, timedelta
 import PySimpleGUI as sg
@@ -103,7 +104,7 @@ count = 0
 def make_after_login():
     layout = [  # Пресет после клика кнопки Войти
         [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), relief = 'groove', orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
-        [sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
+        [sg.Button(button_text=('Назад'), size=(10, 1), key=('back')), sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
         [sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'), font=fonts[1])],
         [sg.Button(button_text=('Завершить'), size=(10, 1), key=('end'), visible=False)]
     ]
@@ -175,7 +176,10 @@ def date_zadachi():
     ]
     return sg.Window('Результаты', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 window = make_main_menu()
-score = 0
+score_mas = [0 for x in range(25)]  #Массив ответов в опросе
+score_sum = 0
+pointer_score = 1                   #Указатель на текущую позицую в массиве
+user_logged = ''
 
 while True:
     event, values = window.read()
@@ -183,10 +187,17 @@ while True:
         break
     elif 'enter' in event:
         cursor.execute('SELECT pass FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
+        user_logged = ''.join(str(values['input_main_login']))
         executed_str = ''.join(str(cursor.fetchone()))
         executed_str = re.sub("[^A-Za-z0-9]", "", executed_str)
+        cursor.execute('SELECT SURVEY_COMPLETE FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
+        survey_check = ''.join(str(cursor.fetchone()))
         if executed_str == values['input_main_pass']:
             window.close()
+            #if not(survey_check):
+            #    window = make_after_login_text()
+            #else:
+            #    print('Опрос уже пройден')
             window = make_after_login_text()
         else:
             window.Element('error_mes').Update(visible=True)
@@ -213,33 +224,32 @@ while True:
         window.close()
         window=organizer()
     elif 'next' in event:
-        if count == 0 or count == 4 or count == 9 or count == 14 or count == 20 or count == 22:
-            if int(values['input1']) == 1:
-                score = score + 7           # Здесь рассматриваются варианты для утверждений с обратным рассчётом баллов
-            if int(values['input1']) == 7:  # Например, указали 7 - программа берёт 1 и т.д.
-                score = score + 1
-            if int(values['input1']) == 2:
-                score = score + 6
-            if int(values['input1']) == 6:
-                score = score + 2
-            if int(values['input1']) == 3:
-                score = score + 5
-            if int(values['input1']) == 5:
-                score = score + 3
-            if int(values['input1']) == 4:
-                score = score + 4
-        else:
-            score = score + int(values['input1'])
-        window.Element('sum').Update(value=score)
-        count = count + 1
-        # Должно быть значение 25 (для тестов используем, например, 3)
-        if count < 25:
-            window.Element('opros').Update(value=que[count])
-            window.Element('input1').Update(value='')
-            window.Element('sum').Update(value=score)
-        if count == 24:
+        score_mas[pointer_score] = abs(int(values['input1']) - 8)
+        pointer_score += 1
+        score_sum = sum(score_mas)
+        print(pointer_score)
+                                            # Должно быть значение 25 (для тестов используем, например, 3)
+        if pointer_score < 25:
+            window.Element('opros').Update(value=que[pointer_score-1])
+            window.Element('input1').Update(value=4)
+            window.Element('sum').Update(value=score_sum)
+        if pointer_score == 25:
+            window.Element('opros').Update(value=que[pointer_score-1])
             window.Element('next').Update(visible=False)
             window.Element('end').Update(visible=True)
+            window.Element('sum').Update(value=score_sum)
+    elif 'back' in event:
+        window.Element('next').Update(visible=True)
+        window.Element('end').Update(visible=False)
+        if pointer_score > 0:
+            score_sum = sum(score_mas) - score_mas[pointer_score-1]
+            window.Element('input1').Update(value=abs(score_mas[pointer_score-1]-8))
+            score_mas[pointer_score-1] = 0
+            window.Element('sum').Update(value=score_sum)
+        if pointer_score > 1:
+            pointer_score -= 1
+            window.Element('opros').Update(value=que[pointer_score-1])
+            window.Element('input1').Update(value='')
     elif 'end_text' in event:
         window.close()
         window = make_after_login()
@@ -257,17 +267,23 @@ while True:
         window=date_zadachi()
             # Должно быть значение 24 (для тестов используем, например, 2)
     elif 'end' in event:
-        score = score + int(values['input1'])
-
+        score_sum += int(values['input1'])
         window.close()
         window = make_rezult()
-        window.Element('rez').Update(value=score)
-        if 0 < score < 59:
+        window.Element('rez').Update(value=score_sum)
+        if 0 < score_sum < 59:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации низкий. Вы предпочитаете жить спонтанно, не привязывать свою деятельность к жесткой структуре и целям. Ваше будущее для Вас самого достаточно туманно, Вам не свойственно четко планировать свою ежедневную активность и прилагать волевые усилия для завершения начатых дел, однако это позволяет Вам достаточно быстро и гибко переключаться на новые виды активности, не «застревая» на структурировании своей деятельности.')
-        if 58 < score < 117:
+        if 58 < score_sum < 117:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации средний. Вы способны сочетать структурированный подход к организации времени своей жизни со спонтанностью и гибкостью, умеете ценить все составляющие Вашего психологического времени и извлекать для себя ценный опыт из многоплановости своей жизни.')
-        if 116 < score < 176:
+        if 116 < score_sum < 176:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации высокий. Вам свойственно видеть и ставить цели, планировать свою деятельность, в том числе с помощью внешних средств, и, проявляя волевые качества и настойчивость, идти к ее достижению. Возможно, в отдельных видах деятельности Вы можете быть чрезмерно структури- рованны, организованны и недостаточно гибки. Тем не менее Вы достаточно эффективно можете структурировать свою деятельность.')
+        sql = 'UPDATE USER_LOGIN_DATA SET ORG_DATE = ?, SURVEY_COMPLETE = ? WHERE login = "' + user_logged + '"'
+        data = [
+            (datetime.now(), 1)
+        ]
+        with con:
+            con.executemany(sql, data)
+
     elif 'open_pass' in event:
         if open:
             open = False
