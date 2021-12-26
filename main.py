@@ -1,6 +1,7 @@
 import datetime
 import re
 from datetime import date, timedelta
+import distutils.util
 import PySimpleGUI as sg
 import sqlite3 as sl
 
@@ -116,10 +117,9 @@ text_opros = 'Для начала работы Вам необходимо пр�
              'Вам предлагается 25 утверждений, касающихся различных сторон Вашей жизни и способов обращения со временем. ' \
              'Введите в поле ту цифру, которая в наибольшей мере характеризует Вас и отражает Вашу точку зрения ' \
              '(1 — полное несогласие, 7 — полное согласие с данным утверждением, 4 — середина шкалы, остальные цифры — промежуточные значения'
-count = 0
 def make_after_login():
     layout = [  # Пресет после клика кнопки Войти
-        [sg.Text(text=que[count], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), relief = 'groove', orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
+        [sg.Text(text=que[0], key=('opros'), font=fonts[1]), sg.Slider(range=(1,7), relief = 'groove', orientation='horizontal', tick_interval=1, default_value=4, key='input1')],
         [sg.Button(button_text=('Назад'), size=(10, 1), key=('back')), sg.Button(button_text=('Далее'), size=(10, 1), key=('next'))],
         [sg.Text('Баллы:'), sg.Text('', size=(3, 1), key=('sum'), font=fonts[1])],
         [sg.Button(button_text=('Завершить'), size=(10, 1), key=('end'), visible=False)]
@@ -150,6 +150,7 @@ def make_register():
         [sg.Text('Повторите пароль', font=fonts[1], key=('pass_check')), sg.Input('', size=(40, 1), key=('input_check'), password_char='*')],
         [sg.Text('*Пароль должен содержать минимум 8 символов', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(20, 1), key=('reg_complete'))],
+        [sg.Button(button_text=('Назад'), size=(20, 1), key=('reg_back'))],
         [sg.Text('Заполните все поля для завершения регистрации!', font=fonts[1], key='reg_check', visible=False)]
     ]
     return sg.Window('Регистрация', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
@@ -161,9 +162,8 @@ def organizer():
          sg.pin(sg.Button(button_text=(days[3]), size=(10, 1), key=('day4'))),
          sg.pin(sg.Button(button_text=(days[4]), size=(10, 1), key=('day5'))),
          sg.pin(sg.Button(button_text=(days[5]), size=(10, 1), key=('day6'))),
-         sg.pin(sg.Button(button_text=(days[6]), size=(10, 1), key=('day7')))]
+         sg.pin(sg.Button(button_text=(days[6]), size=(10, 1), key=('day7')))],
     ]
-
     return sg.Window('Органайзер', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 def make_rezult():
     layout = [
@@ -173,15 +173,15 @@ def make_rezult():
         [sg.Button(button_text=('Завершить опрос'), size=(20, 1), key=('opros_complete'))]
     ]
     return sg.Window('Результаты', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
-def lk():
+def make_user_corner():
     layout = [
-        [sg.pin(sg.Text(text="Добро пожаловать, ", font=fonts[0])), sg.pin(sg.Text(text="", key=('namesurname'), font=fonts[0])) ],
-        [sg.pin(sg.Button(button_text=('Пройти входной опрос'), size=(20, 1), key=('vhopros'))),
+        [sg.pin(sg.Text(text="Добро пожаловать,", font=fonts[0])), sg.pin(sg.Text(text="", key=('user_init'), font=fonts[0])) ],
+        [sg.pin(sg.Button(button_text=('Пройти входной опрос'), size=(20, 1), key=('to_survey'))),
          #в дальнейшем надо рассчитать где-то прогресс в процентах, типа сколько заданий выполнено от общего количества
-         sg.pin(sg.Text(text='Ваш прогресс по количеству выполненных заданий составляет ')),
-         sg.pin(sg.Text(text='', ))], #вот этот текст менять на проценты
-        [sg.Button(button_text=('Перейти в органайзер'), size=(20, 1), key=('org'))],
-        [sg.Button(button_text=('Пройти итоговый тест'), size=(20, 1), key=('test'))],
+            sg.pin(sg.Text(text='Ваш прогресс по количеству выполненных заданий составляет ')),
+            sg.pin(sg.Text(text='', ))], #вот этот текст менять на проценты
+        [sg.Button(button_text=('Перейти в органайзер'), size=(20, 1), key=('org'), disabled=True)],
+        [sg.Button(button_text=('Пройти итоговый тест'), size=(20, 1), key=('test'), disabled=True)],
         [sg.Button(button_text=('Выйти из аккаунта'), size=(20, 1), key=('exit'))]
     ]
     return sg.Window('Личный кабинет', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
@@ -215,10 +215,12 @@ def date_zadachi():
         [sg.Text(text=zadachi[10], font=fonts[0], visible=False, key=('zad10')), sg.Combo(days, size=(10,1), key=('com10'), readonly=True, visible=False)],
         [sg.Text(text=zadachi[11], font=fonts[0], visible=False, key=('zad11')), sg.Combo(days, size=(10,1), key=('com11'), readonly=True, visible=False)],
         [sg.Text(text=zadachi[12], font=fonts[0], visible=False, key=('zad12')), sg.Combo(days, size=(10,1), key=('com12'), readonly=True, visible=False)],
-        [sg.Button(button_text=('Начать работу'), size=(20,1), key=('startwork'))]
+        [sg.Button(button_text=('Начать работу'), size=(20,1), key=('startwork'))],
+        [sg.Button(button_text=('Назад'), size=(20, 1), key=(''))]
     ]
     return sg.Window('Распределение задач', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 window = make_main_menu()
+sg.Window.set_min_size(window, window.size)
 score_mas = [0 for x in range(25)]  #Массив ответов в опросе
 score_sum = 0
 pointer_score = 1                   #Указатель на текущую позицую в массиве
@@ -238,37 +240,45 @@ while True:
         if i>0:
             i-=1
             window.Element('vopros').Update(value=itest[i])
-    elif 'vhopros' in event:
+    elif 'to_survey' in event:
         window.close()
         window=make_after_login_text()
+        sg.Window.set_min_size(window, window.size)
     elif 'exit' in event:
         window.close()
         window=make_main_menu()
+        sg.Window.set_min_size(window, window.size)
     elif 'test' in event:
         window.close()
         window=itogtest()
+        sg.Window.set_min_size(window, window.size)
     elif 'enter' in event:
         cursor.execute('SELECT pass FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
         user_logged = ''.join(str(values['input_main_login']))
         executed_str = ''.join(str(cursor.fetchone()))
         executed_str = re.sub("[^A-Za-z0-9]", "", executed_str)
+
         cursor.execute('SELECT SURVEY_COMPLETE FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
         survey_check = ''.join(str(cursor.fetchone()))
+        survey_check = distutils.util.strtobool(re.sub("[^A-Za-z0-9]", "", survey_check))
+
+        cursor.execute('SELECT name, surname FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
+        user_initials = ''.join(str(cursor.fetchone()))
+        user_initials = re.sub("[^А-Яа-яЁёA-Za-z0-9 ]", "", user_initials)
+
         if executed_str == values['input_main_pass']:
             window.close()
-            #if not(survey_check):
-            #    window = make_after_login_text()
-            #else:
-            #    print('Опрос уже пройден')
-            #cursor.execute('SELECT pass FROM USER_LOGIN_DATA where name="')
-            window=lk()
-           # window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA'))
-            window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA where login="'+values['input_main_login']+'"'))
+            window = make_user_corner()
+            sg.Window.set_min_size(window, window.size)
+            window.Element('user_init').Update(value=user_initials)
         else:
             window.Element('error_mes').Update(visible=True)
+        if survey_check:
+            window.Element('org').Update(disabled=False)
     elif 'register' in event:
         window.close()
         window = make_register()
+        sg.Window.set_min_size(window, window.size)
     elif 'startwork' in event:
        #Эти данные нужно как-то сохранять в БД
        # i=0
@@ -288,11 +298,16 @@ while True:
         raspr[12]=(values['com12'])
         window.close()
         window=organizer()
+        sg.Window.set_min_size(window, window.size)
+    elif 'reg_back' in event:
+        window.close()
+        window = make_user_corner()
+        sg.Window.set_min_size(window, window.size)
+        window.Element('user_init').Update(value=user_initials)
     elif 'next' in event:
         score_mas[pointer_score] = abs(int(values['input1']) - 8)
         pointer_score += 1
         score_sum = sum(score_mas)
-        print(pointer_score)
                                             # Должно быть значение 25 (для тестов используем, например, 3)
         if pointer_score < 25:
             window.Element('opros').Update(value=que[pointer_score-1])
@@ -318,6 +333,7 @@ while True:
     elif 'end_text' in event:
         window.close()
         window = make_after_login()
+        sg.Window.set_min_size(window, window.size)
     elif 'org' in event: #берем today либо из базы данных, либо из функции
         today=date.today()
         izm =timedelta(days=1, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
@@ -330,11 +346,13 @@ while True:
         days[6]=today+izm*6
         window.close()         #Если уже есть дата в БД, то открывается сразу органайзер
         window=date_zadachi()
+        sg.Window.set_min_size(window, window.size)
             # Должно быть значение 24 (для тестов используем, например, 2)
     elif 'end' in event:
         score_sum += int(values['input1'])
         window.close()
         window = make_rezult()
+        sg.Window.set_min_size(window, window.size)
         window.Element('rez').Update(value=score_sum)
         if 0 < score_sum < 59:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации низкий. Вы предпочитаете жить спонтанно, не привязывать свою деятельность к жесткой структуре и целям. Ваше будущее для Вас самого достаточно туманно, Вам не свойственно четко планировать свою ежедневную активность и прилагать волевые усилия для завершения начатых дел, однако это позволяет Вам достаточно быстро и гибко переключаться на новые виды активности, не «застревая» на структурировании своей деятельности.')
@@ -342,12 +360,6 @@ while True:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации средний. Вы способны сочетать структурированный подход к организации времени своей жизни со спонтанностью и гибкостью, умеете ценить все составляющие Вашего психологического времени и извлекать для себя ценный опыт из многоплановости своей жизни.')
         if 116 < score_sum < 176:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации высокий. Вам свойственно видеть и ставить цели, планировать свою деятельность, в том числе с помощью внешних средств, и, проявляя волевые качества и настойчивость, идти к ее достижению. Возможно, в отдельных видах деятельности Вы можете быть чрезмерно структури- рованны, организованны и недостаточно гибки. Тем не менее Вы достаточно эффективно можете структурировать свою деятельность.')
-        sql = 'UPDATE USER_LOGIN_DATA SET ORG_DATE = ?, SURVEY_COMPLETE = ? WHERE login = "' + user_logged + '"'
-        data = [
-           # (datetime.now(), 1)
-        ]
-        with con:
-            con.executemany(sql, data)
     elif 'open_pass' in event:
         if open:
             open = False
@@ -373,9 +385,19 @@ while True:
                 con.executemany(sql, data)
             window.close()
             window = make_main_menu()
+            sg.Window.set_min_size(window, window.size)
             window.Element('complete_ok').Update(visible=True)
 
     elif 'opros_complete':
+        sql = 'UPDATE USER_LOGIN_DATA SET ORG_DATE = ?, SURVEY_COMPLETE = ? WHERE login = "' + user_logged + '"'
+        data = [
+            (datetime.date.today(), 1)
+        ]
+        with con:
+            con.executemany(sql, data)
         window.close()
-        window = lk()
+        window = make_user_corner()
+        window.Element('org').Update(disabled=False)
+        sg.Window.set_min_size(window, window.size)
+        window.Element('user_init').Update(value=user_initials)
 window.close()
