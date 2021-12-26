@@ -25,7 +25,6 @@ def make_main_menu():
         [sg.Button(button_text=('Войти'), size=(20, 1), key=('enter'))],
         [sg.Text('У Вас нет аккаунта?', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(30, 1), key=('register'))],
-        [sg.Button(button_text=('Перейти в органайзер'), size=(30, 1), key=('org'))],
         [sg.Text('*Ваш аккаунт создан, осталось войти в него!', font=fonts[1], key='complete_ok', visible=False)],
     ]
     return sg.Window('Органайзер', layout, icon=r'1.ico', size=(500, 250), resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
@@ -147,15 +146,28 @@ def organizer():
          sg.pin(sg.Button(button_text=(days[5]), size=(10, 1), key=('day6'))),
          sg.pin(sg.Button(button_text=(days[6]), size=(10, 1), key=('day7')))]
     ]
+
     return sg.Window('Органайзер', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 def make_rezult():
     layout = [
         [sg.Text(text='Результаты опроса', font=fonts[0])],
-        [sg.Text(text='Количество набранных баллов: '),sg.Text('', size=(3, 1), key=('rez'), font=fonts[1])],
+        [sg.Text(text='Количество набранных баллов: '), sg.Text('', size=(3, 1), key=('rez'), font=fonts[1])],
         [sg.Multiline(size=(50,10), key=('rezt'), font=fonts[1], disabled=True)],
         [sg.Button(button_text=('Завершить опрос'), size=(20, 1), key=('opros_complete'))]
     ]
     return sg.Window('Результаты', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
+def lk():
+    layout = [
+        [sg.pin(sg.Text(text="Добро пожаловать, ", font=fonts[0])), sg.pin(sg.Text(text="", key=('namesurname'), font=fonts[0])) ],
+        [sg.pin(sg.Button(button_text=('Пройти входной опрос'), size=(20, 1), key=('vhopros'))),
+         #в дальнейшем надо рассчитать где-то прогресс в процентах, типа сколько заданий выполнено от общего количества
+         sg.pin(sg.Text(text='Ваш прогресс по количеству выполненных заданий составляет ')),
+         sg.pin(sg.Text(text='', ))], #вот этот текст менять на проценты
+        [sg.Button(button_text=('Перейти в органайзер'), size=(20, 1), key=('org'))],
+        [sg.Button(button_text=('Пройти итоговый тест'), size=(20, 1), key=('test'))],
+        [sg.Button(button_text=('Выйти из аккаунта'), size=(20, 1), key=('exit'))]
+    ]
+    return sg.Window('Личный кабинет', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 def date_zadachi():
     layout = [
         [sg.Text(text="Для начала работы распределите задачи по дням:", font=fonts[0])],
@@ -174,7 +186,7 @@ def date_zadachi():
         [sg.Text(text=zadachi[12], font=fonts[0], visible=False, key=('zad12')), sg.Combo(days, size=(10,1), key=('com12'), readonly=True, visible=False)],
         [sg.Button(button_text=('Начать работу'), size=(20,1), key=('startwork'))]
     ]
-    return sg.Window('Результаты', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
+    return sg.Window('Распределение задач', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 window = make_main_menu()
 score_mas = [0 for x in range(25)]  #Массив ответов в опросе
 score_sum = 0
@@ -185,6 +197,12 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
+    elif 'vhopros' in event:
+        window.close()
+        window=make_after_login_text()
+    elif 'exit' in event:
+        window.close()
+        window=make_main_menu()
     elif 'enter' in event:
         cursor.execute('SELECT pass FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
         user_logged = ''.join(str(values['input_main_login']))
@@ -198,7 +216,12 @@ while True:
             #    window = make_after_login_text()
             #else:
             #    print('Опрос уже пройден')
-            window = make_after_login_text()
+            #cursor.execute('SELECT pass FROM USER_LOGIN_DATA where name="')
+            window=lk()
+            window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA'))
+            #window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA where pass="'+values['input_main_pass']))
+
+            #window = make_after_login_text()
         else:
             window.Element('error_mes').Update(visible=True)
     elif 'register' in event:
@@ -279,11 +302,10 @@ while True:
             window.Element('rezt').Update(value='Ваш уровень самоорганизации высокий. Вам свойственно видеть и ставить цели, планировать свою деятельность, в том числе с помощью внешних средств, и, проявляя волевые качества и настойчивость, идти к ее достижению. Возможно, в отдельных видах деятельности Вы можете быть чрезмерно структури- рованны, организованны и недостаточно гибки. Тем не менее Вы достаточно эффективно можете структурировать свою деятельность.')
         sql = 'UPDATE USER_LOGIN_DATA SET ORG_DATE = ?, SURVEY_COMPLETE = ? WHERE login = "' + user_logged + '"'
         data = [
-            (datetime.now(), 1)
+           # (datetime.now(), 1)
         ]
         with con:
             con.executemany(sql, data)
-
     elif 'open_pass' in event:
         if open:
             open = False
@@ -310,7 +332,8 @@ while True:
             window.close()
             window = make_main_menu()
             window.Element('complete_ok').Update(visible=True)
+
     elif 'opros_complete':
         window.close()
-        window = make_main_menu()
+        window = lk()
 window.close()
