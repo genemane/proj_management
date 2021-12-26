@@ -79,6 +79,23 @@ que = [  # Массив строк для опроса
     '24. Если я не закончил какое-то дело, то это не выходит у меня из головы',
     '25. У меня есть главная цель в жизни'
 ]
+itest=[
+    '1. (1 балл) Наблюдаемый парадокс в новом тысячелетии: люди повысили качество своей жизни, но при этом вырос и уровень…',
+    '2. (1 балл) Из-за какого ведущего фактора, человеку на сегодняшний день труднее работать с информацией?',
+    '3. (1 балл) Верно ли утверждение: "Горизонтальный" контроль обеспечивает слаженность всех мероприятий, в которых вы участвуете.',
+    '4. (1 балл) Верно ли утверждение: "Вертикальный" контроль, обеспечивает управление разными уровнями в рамках отдельных аспектов и проектов.',
+    '5. (1 балл) Главная проблема, порождающая всепроникающий фактор стресса, при выполнении поставленных задач?',
+    '6. (1 балл) Для проблем, которые не предполагают никаких действий с вашей стороны, существует три возможных категории:',
+    '7. (1 балл) В календаре следует отмечать:',
+    '8. (1 балл) Если в списке дел есть задание, которое не обязательно выполнять в течение дня, то следует:',
+    '9. (1 балл) Суть управления рабочим процессом заключается:',
+    '10. (1.5 балла) Выберете один из критериев для выбора текущих действий:',
+    '11. (1.5 балла) Определите одну из стадий, которое проходит сознание при выполнении практически любого задания:',
+    '12. (1 балл) Верно ли утверждение? Более адекватные методы внутреннего восприятия проектов и ситуаций позволяют справляться с делами быстрее, лучше и успешнее.',
+    '13. (1 балл) Вопрос … создает мотивацию. Вопрос … позволяет расставить акценты. Вопрос … расширяет круг возможных вариантов.',
+    '14. (1 балл) Заполните пропуски: План … описывает промежуточные …, достижение которых можно … естественным путем.',
+    '15. (1 балл) Заполните пропуски: Вам не нужны новые …, чтобы повысить … - вам необходим только новый набор …, определяющих, когда и где применить имеющийся опыт.'
+]
 raspr=[
     '',
     '',
@@ -168,6 +185,20 @@ def lk():
         [sg.Button(button_text=('Выйти из аккаунта'), size=(20, 1), key=('exit'))]
     ]
     return sg.Window('Личный кабинет', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
+i=0
+def itogtest():
+    layout = [
+        [sg.Text(text="Выберите один вариант ответа, который считаете верным", font=fonts[0])],
+        [sg.Text(text=itest[0], font=fonts[1], key=('vopros'))],
+        [sg.Radio('', 1, size=(25,1), key=('r1'), default=True)],
+        [sg.Radio('', 1, size=(25,1), key=('r2'))],
+        [sg.Radio('', 1, size=(25,1), key=('r3'))],
+        [sg.Radio('', 1, size=(25,1), key=('r4'))],
+        [sg.Radio('', 1, size=(25,1), key=('r5'))],
+        [sg.pin(sg.Button(button_text=('Назад'), size=(20, 1), key=('back1'))),
+         sg.pin(sg.Button(button_text=('Далее'), size=(20, 1), key=('next1')))]
+    ]
+    return sg.Window('Итоговый тест', layout, resizable=True, finalize=True, grab_anywhere=True, element_justification='l')
 def date_zadachi():
     layout = [
         [sg.Text(text="Для начала работы распределите задачи по дням:", font=fonts[0])],
@@ -192,17 +223,30 @@ score_mas = [0 for x in range(25)]  #Массив ответов в опросе
 score_sum = 0
 pointer_score = 1                   #Указатель на текущую позицую в массиве
 user_logged = ''
-
+mark=0
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
+    elif 'next1' in event:
+
+        if i<15:
+            i+=1
+            window.Element('vopros').Update(value=itest[i])
+
+    elif 'back1' in event:
+        if i>0:
+            i-=1
+            window.Element('vopros').Update(value=itest[i])
     elif 'vhopros' in event:
         window.close()
         window=make_after_login_text()
     elif 'exit' in event:
         window.close()
         window=make_main_menu()
+    elif 'test' in event:
+        window.close()
+        window=itogtest()
     elif 'enter' in event:
         cursor.execute('SELECT pass FROM USER_LOGIN_DATA where login = "' + values['input_main_login'] + '"')
         user_logged = ''.join(str(values['input_main_login']))
@@ -218,10 +262,8 @@ while True:
             #    print('Опрос уже пройден')
             #cursor.execute('SELECT pass FROM USER_LOGIN_DATA where name="')
             window=lk()
-            window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA'))
-            #window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA where pass="'+values['input_main_pass']))
-
-            #window = make_after_login_text()
+           # window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA'))
+            window.Element('namesurname').Update(value=cursor.execute('SELECT name FROM USER_LOGIN_DATA where login="'+values['input_main_login']+'"'))
         else:
             window.Element('error_mes').Update(visible=True)
     elif 'register' in event:
