@@ -26,6 +26,7 @@ def make_main_menu():
         [sg.Button(button_text=('Войти'), size=(20, 1), key=('enter'))],
         [sg.Text('У Вас нет аккаунта?', font=fonts[1])],
         [sg.Button(button_text=('Зарегистрироваться'), size=(30, 1), key=('register'))],
+        [sg.Button(button_text=('1'), size=(1,1), key=('testing'))],
         [sg.Text('*Ваш аккаунт создан, осталось войти в него!', font=fonts[1], key='complete_ok', visible=False)],
     ]
     return sg.Window('Органайзер', layout, icon=r'1.ico', size=(500, 250), resizable=True, finalize=True, grab_anywhere=True, element_justification='c')
@@ -190,11 +191,11 @@ def itogtest():
     layout = [
         [sg.Text(text="Выберите один вариант ответа, который считаете верным", font=fonts[0])],
         [sg.Text(text=itest[0], font=fonts[1], key=('vopros'))],
-        [sg.Radio('', 1, size=(25,1), key=('r1'), default=True)],
-        [sg.Radio('', 1, size=(25,1), key=('r2'))],
-        [sg.Radio('', 1, size=(25,1), key=('r3'))],
-        [sg.Radio('', 1, size=(25,1), key=('r4'))],
-        [sg.Radio('', 1, size=(25,1), key=('r5'))],
+        [sg.Radio('безработицы', 1, size=(60,1), key=('r1'), default=True)],
+        [sg.Radio('заработной платы', 1, size=(60,1), key=('r2'))],
+        [sg.Radio('стресса', 1, size=(60,1), key=('r3'))],
+        [sg.Radio('', 1, size=(60,1), key=('r4'), visible=False)],
+        [sg.Radio('', 1, size=(60,1), key=('r5'), visible=False)],
         [sg.pin(sg.Button(button_text=('Назад'), size=(20, 1), key=('back1'))),
          sg.pin(sg.Button(button_text=('Далее'), size=(20, 1), key=('next1')))]
     ]
@@ -230,16 +231,102 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
+    elif 'testing' in event:
+        window.close()
+        window=itogtest()
     elif 'next1' in event:
-
         if i<15:
             i+=1
             window.Element('vopros').Update(value=itest[i])
-
+        if i==2 or i==3 or i==11:
+            window.Element('r1').Update(visible=True)
+            window.Element('r2').Update(visible=True)
+            window.Element('r3').Update(visible=False)
+            window.Element('r4').Update(visible=False)
+            window.Element('r5').Update(visible=False)
+            if i==2:
+                window.Element('r1').Update(text="Нет, неверно")
+                window.Element('r2').Update(text="Да, верно")
+               # if :
+                #    mark+=1
+                #    print(mark)
+            if i==3:
+                window.Element('r1').Update(text="Да, верно")
+                window.Element('r2').Update(text="Нет, неверно")
+            if i==11:
+                window.Element('r1').Update(text="Да, верно")
+                window.Element('r2').Update(text="Нет, неверно")
+        elif i==12:
+            window.Element('r1').Update(visible=True, text="Когда?")
+            window.Element('r2').Update(visible=True, text="Где?")
+            window.Element('r3').Update(visible=True, text="Что?")
+            window.Element('r4').Update(visible=True, text="Зачем?")
+            window.Element('r5').Update(visible=False)
+        elif i==9 or i==10:
+            window.Element('r1').Update(visible=True)
+            window.Element('r2').Update(visible=True)
+            window.Element('r3').Update(visible=True)
+            window.Element('r4').Update(visible=True)
+            window.Element('r5').Update(visible=True)
+            if i==9:
+                window.Element('r1').Update(text="Правильность")
+                window.Element('r2').Update(text="Осознанность")
+                window.Element('r3').Update(text="Контекст")
+                window.Element('r4').Update(text="Занятость")
+                window.Element('r5').Update(text="Организованность")
+            if i==10:
+                window.Element('r1').Update(text="Определение иерархии задач")
+                window.Element('r2').Update(text="Определение цели и принципов")
+                window.Element('r3').Update(text="Анализ текущей ситуации")
+                window.Element('r4').Update(text="Визуализация процесса работы")
+                window.Element('r5').Update(text="Оценка эффективности работы")
+        else:
+            window.Element('r1').Update(visible=True)
+            window.Element('r2').Update(visible=True)
+            window.Element('r3').Update(visible=True)
+            window.Element('r4').Update(visible=False)
+            window.Element('r5').Update(visible=False)
+            if i==0:
+                window.Element('r1').Update(text="безработицы")
+                window.Element('r2').Update(text="заработной платы")
+                window.Element('r3').Update(text="стресса")
+            if i==1:
+                window.Element('r1').Update(text="колоссальных объемов информации")
+                window.Element('r2').Update(text="неструктурированности информации")
+                window.Element('r3').Update(text="структурной сложности информации")
+            if i==4:
+                window.Element('r1').Update(text="Недостаток внимания к задачам")
+                window.Element('r2').Update(text="Неподходящий период дня")
+                window.Element('r3').Update(text="Попытка выполнять все задачи одновременно")
+            if i==5:
+                window.Element('r1').Update(text="Мусор, переработанная информация и хранилище помеченной информации")
+                window.Element('r2').Update(text="Мусор, отложенная информация и хранилище помеченной информации")
+                window.Element('r3').Update(text="Мусор, отложенная информация и шредер")
+            if i==6:
+                window.Element('r1').Update(text="действия, которые следует совершить в определенное время")
+                window.Element('r2').Update(text="дни отдыха")
+                window.Element('r3').Update(text="день рождения мамы")
+            if i==7:
+                window.Element('r1').Update(text="решить в первую очередь")
+                window.Element('r2').Update(text="не сосредотачивать внимания на нем")
+                window.Element('r3').Update(text="решить в последнюю очередь")
+            if i==8:
+                window.Element('r1').Update(text="в постоянном пересмотре проблем")
+                window.Element('r2').Update(text="постановке новых задач")
+                window.Element('r3').Update(text="общением со экспертами")
+            if i==13:
+                window.Element('r1').Update(text="1) результаты 2) задачи")
+                window.Element('r2').Update(text="1) проекта 2) раздумий")
+                window.Element('r3').Update(text="1) распланировать 2) усовершенствовать")
+            if i==14:
+                window.Element('r1').Update(text="1) продуктивность 2) уверенность")
+                window.Element('r2').Update(text="1) рефлексов 2) инструментов")
+                window.Element('r3').Update(text="1) навыки 2) задачи")
     elif 'back1' in event:
         if i>0:
             i-=1
             window.Element('vopros').Update(value=itest[i])
+
     elif 'to_survey' in event:
         window.close()
         window=make_after_login_text()
